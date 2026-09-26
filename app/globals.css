@@ -1,0 +1,205 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: "Newsreader", "Iowan Old Style", "Palatino Linotype", "Georgia", serif;
+  --font-body: "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+
+  /* ---------------------------------------------------------------------
+   * LIGHT THEME — a warm, editorial workspace. Backgrounds step up in
+   * three deliberate layers (paper → raised → overlay) rather than a flat
+   * white, so cards and menus read as physically closer to the person.
+   * ------------------------------------------------------------------- */
+  --color-paper: 246 245 240;
+  --color-paper-raised: 255 255 254;
+  --color-paper-overlay: 255 255 255;
+
+  --color-ink: 24 26 21;
+  --color-ink-muted: 91 95 88;
+  --color-ink-faint: 107 111 102; /* 4.61:1 on paper — WCAG AA */
+
+  --color-line: 227 225 217;
+  --color-line-strong: 203 201 192;
+
+  --color-moss-50: 238 243 238;
+  --color-moss-100: 216 228 218;
+  --color-moss-300: 140 173 147;
+  --color-moss-500: 63 97 82;
+  --color-moss-600: 52 81 67;
+  --color-moss-700: 42 66 55;
+
+  --color-clay-50: 250 238 231;
+  --color-clay-500: 181 80 47;
+
+  --color-danger-50: 251 238 235;
+  --color-danger-500: 179 67 46;
+
+  --shadow-tint: 24 26 21;
+  color-scheme: light;
+}
+
+/* ---------------------------------------------------------------------
+ * DARK THEME — a deep, layered ink workspace. Surfaces get *lighter* as
+ * they rise (bg → sidebar/cards → menus/dialogs), never a single flat
+ * black, and every accent is re-tuned for contrast rather than reused
+ * as-is from light mode.
+ * ------------------------------------------------------------------- */
+.dark {
+  --color-paper: 19 20 18;
+  --color-paper-raised: 27 29 25;
+  --color-paper-overlay: 36 38 33;
+
+  --color-ink: 236 236 230;
+  --color-ink-muted: 172 174 163;
+  --color-ink-faint: 146 149 138; /* ~5.4:1 on paper */
+
+  --color-line: 46 48 42;
+  --color-line-strong: 66 69 60;
+
+  --color-moss-50: 30 39 33;
+  --color-moss-100: 39 54 44;
+  --color-moss-300: 121 163 137;
+  --color-moss-500: 107 163 137;
+  --color-moss-600: 130 181 156;
+  --color-moss-700: 154 198 174;
+
+  --color-clay-50: 46 35 28;
+  --color-clay-500: 217 129 92;
+
+  --color-danger-50: 48 30 27;
+  --color-danger-500: 224 120 97;
+
+  --shadow-tint: 0 0 0;
+  color-scheme: dark;
+}
+
+@layer base {
+  * {
+    @apply border-line;
+  }
+
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-serif text-ink;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  ::selection {
+    background: theme("colors.moss.100");
+  }
+
+  :focus-visible {
+    outline: 2px solid theme("colors.moss.500");
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* Reusable low-level primitives that shadcn-style components build on. */
+  .input-base {
+    /* 16px below sm: iOS Safari zooms the page on focus for smaller inputs. */
+    @apply w-full rounded-md border border-line bg-paper-raised px-3 py-2 text-base text-ink placeholder:text-ink-faint sm:text-sm
+      transition-[border-color,box-shadow] duration-150 focus:border-moss-500 focus:shadow-glow-accent focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .card-surface {
+    @apply rounded-lg border border-line bg-paper-raised shadow-card;
+  }
+
+  .surface-overlay {
+    @apply rounded-lg border border-line bg-paper-overlay shadow-elevated;
+  }
+
+  /* Hand-rolled prose styling for rendered assistant Markdown, kept
+     minimal on purpose rather than pulling in @tailwindcss/typography. */
+  .prose-chat {
+    @apply text-[0.95rem] leading-[1.7] text-ink;
+    overflow-wrap: anywhere;
+  }
+  .prose-chat > * + * {
+    @apply mt-3;
+  }
+  .prose-chat h1,
+  .prose-chat h2,
+  .prose-chat h3 {
+    @apply mt-5 text-base font-medium;
+  }
+  .prose-chat ul {
+    @apply list-disc space-y-1 pl-5;
+  }
+  .prose-chat ol {
+    @apply list-decimal space-y-1 pl-5;
+  }
+  .prose-chat blockquote {
+    @apply border-l-2 border-line-strong pl-3 text-ink-muted;
+  }
+  .prose-chat table {
+    @apply w-full border-collapse text-sm;
+  }
+  .prose-chat th,
+  .prose-chat td {
+    @apply border border-line px-2 py-1 text-left;
+  }
+
+  /* Nexora wordmark motif: a small bracketed node before the name, used
+     wherever the product identity appears (sidebar, auth, mobile bar). */
+  .brand-mark {
+    @apply relative inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-[7px];
+    background: linear-gradient(155deg, rgb(var(--color-moss-500)), rgb(var(--color-moss-700)));
+  }
+  .brand-mark::after {
+    content: "";
+    @apply h-2 w-2 rounded-[2px] bg-on-accent;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--color-line-strong)) transparent;
+  }
+
+  /* Loading shimmer for skeleton/placeholder states. */
+  .bg-shimmer {
+    background-image: linear-gradient(
+      100deg,
+      transparent 30%,
+      rgb(var(--color-line-strong) / 0.5) 50%,
+      transparent 70%
+    );
+    background-size: 200% 100%;
+  }
+}
+
+/* Theme changes should feel like a soft cross-fade, not a hard flash. */
+html.theme-transition,
+html.theme-transition * {
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease !important;
+}
+
+/* Honour the OS "reduce motion" setting: no animation/transition/smooth
+   scrolling for people who ask for none. Essential state is still
+   conveyed (text/icon changes), never by motion alone. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
